@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';
-import * as BaseCommands from './commands';
-import Bash from './bash';
-import Styles from './styles';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import * as BaseCommands from "./commands";
+import Bash from "./bash";
+import Styles from "./styles";
 
 const CTRL_CHAR_CODE = 17;
 const L_CHAR_CODE = 76;
@@ -12,16 +13,15 @@ const TAB_CHAR_CODE = 9;
 const noop = () => {};
 
 export default class Terminal extends Component {
-
     constructor({ history, structure, extensions, prefix }) {
         super();
         this.Bash = new Bash(extensions);
         this.ctrlPressed = false;
         this.state = {
-            settings: { user: { username: prefix.split('@')[1] } },
+            settings: { user: { username: prefix.split("@")[1] } },
             history: history.slice(),
             structure: Object.assign({}, structure),
-            cwd: '',
+            cwd: "",
         };
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -49,7 +49,7 @@ export default class Terminal extends Component {
      * Utilize immutability
      */
     shouldComponentUpdate(nextProps, nextState) {
-        return (this.state !== nextState) || (this.props !== nextProps);
+        return this.state !== nextState || this.props !== nextProps;
     }
 
     /*
@@ -100,11 +100,11 @@ export default class Terminal extends Component {
     handleKeyUp(evt) {
         if (evt.which === L_CHAR_CODE) {
             if (this.ctrlPressed) {
-                this.setState(this.Bash.execute('clear', this.state));
+                this.setState(this.Bash.execute("clear", this.state));
             }
         } else if (evt.which === C_CHAR_CODE) {
             if (this.ctrlPressed) {
-                this.refs.input.value = '';
+                this.refs.input.value = "";
             }
         } else if (evt.which === UP_CHAR_CODE) {
             if (this.Bash.hasPrevCommand()) {
@@ -114,7 +114,7 @@ export default class Terminal extends Component {
             if (this.Bash.hasNextCommand()) {
                 this.refs.input.value = this.Bash.getNextCommand();
             } else {
-                this.refs.input.value = '';
+                this.refs.input.value = "";
             }
         } else if (evt.which === CTRL_CHAR_CODE) {
             this.ctrlPressed = false;
@@ -128,15 +128,18 @@ export default class Terminal extends Component {
         const input = evt.target[0].value;
         const newState = this.Bash.execute(input, this.state);
         this.setState(newState);
-        this.refs.input.value = '';
+        this.refs.input.value = "";
     }
 
     renderHistoryItem(style) {
         return (item, key) => {
-            const prefix = item.hasOwnProperty('cwd') ? (
-                <span style={style.prefix}>{`${this.props.prefix} ~${item.cwd} $`}</span>
-            ) : undefined;
-            return <div data-test-id={`history-${key}`} key={key} >{prefix}{item.value}</div>;
+            const prefix = item.hasOwnProperty("cwd") ? <span style={style.prefix}>{`${this.props.prefix} ~${item.cwd} $`}</span> : undefined;
+            return (
+                <div data-test-id={`history-${key}`} key={key}>
+                    {prefix}
+                    {item.value}
+                </div>
+            );
         };
     }
 
@@ -147,21 +150,15 @@ export default class Terminal extends Component {
         return (
             <div className="ReactBash" style={style.ReactBash}>
                 <div style={style.header}>
-                    <span style={style.redCircle} onClick={onClose}></span>
-                    <span style={style.yellowCircle} onClick={onMinimize}></span>
-                    <span style={style.greenCircle} onClick={onExpand}></span>
+                    <span style={style.redCircle} onClick={onClose} />
+                    <span style={style.yellowCircle} onClick={onMinimize} />
+                    <span style={style.greenCircle} onClick={onExpand} />
                 </div>
                 <div style={style.body} onClick={() => this.refs.input.focus()}>
                     {history.map(this.renderHistoryItem(style))}
                     <form onSubmit={evt => this.handleSubmit(evt)} style={style.form}>
                         <span style={style.prefix}>{`${prefix} ~${cwd} $`}</span>
-                        <input
-                          autoComplete="off"
-                          onKeyDown={this.handleKeyDown}
-                          onKeyUp={this.handleKeyUp}
-                          ref="input"
-                          style={style.input}
-                        />
+                        <input autoComplete="off" onKeyDown={this.handleKeyDown} onKeyUp={this.handleKeyUp} ref="input" style={style.input} />
                     </form>
                 </div>
             </div>
@@ -170,8 +167,8 @@ export default class Terminal extends Component {
 }
 
 Terminal.Themes = {
-    LIGHT: 'light',
-    DARK: 'dark',
+    LIGHT: "light",
+    DARK: "dark",
 };
 
 Terminal.propTypes = {
@@ -192,7 +189,7 @@ Terminal.defaultProps = {
     onClose: noop,
     onExpand: noop,
     onMinimize: noop,
-    prefix: 'hacker@default',
+    prefix: "hacker@default",
     structure: {},
     styles: {},
     theme: Terminal.Themes.LIGHT,
